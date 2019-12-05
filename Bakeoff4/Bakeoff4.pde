@@ -1,6 +1,51 @@
 import java.util.ArrayList;
 import java.util.Collections;
 import ketai.sensors.*;
+//import java.lang.Object;
+//import android.speech.SpeechRecognizer;
+//import android.speech.RecognitionListener;
+//import android.content.Context;
+
+import android.view.View;
+import android.content.Context;
+import android.widget.Button;
+import android.app.Activity;
+///import android.speech.SpeechRecognizer;//in the "easy way that is useless
+import android.view.Gravity;//for my layout
+import android.graphics.Color;//for the color of the button
+///import android.speech.RecognitionListener;///useless for the "easy way"
+import android.speech.RecognizerIntent;
+
+import android.content.Intent;
+//import android.os.Vibrator;///let us take problems one after the other!!!!!
+import android.widget.Toast;
+import java.lang.Throwable;
+import java.lang.Exception;
+import java.lang.RuntimeException;
+import android.content.ActivityNotFoundException;
+import java.util.Locale;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.FrameLayout;
+import android.view.View.OnClickListener;
+import android.content.Context;
+import android.speech.SpeechRecognizer;
+import android.speech.RecognitionListener;
+
+import android.os.BaseBundle;
+import android.os.Bundle;
+import android.content.Intent;
+
+SpeechRecognizer sp;
+Activity act;
+Intent intent;
+Button bouton;
+private static final int MY_BUTTON1 = 9000;
+FrameLayout fl;
+Context context;
+Bundle savedInstanceState;
+RecognitionListener listener;
+
+
 
 KetaiSensor sensor;
 float angleCursor = 0;
@@ -23,9 +68,81 @@ int finishTime = 0; //records the time of the final click
 boolean userDone = false;
 int countDownTimerWait = 0;
 
+  //public void onStart(){
+  //  startSpeech();
+  //}
+
+public void onStart(){
+   act = this.getActivity();
+ context = act.getApplicationContext();
+
+ bouton = new Button(act);
+bouton.setText("startspeech");
+ bouton.setBackgroundColor(Color.WHITE);
+  bouton.setId(MY_BUTTON1);
+      
+       OnClickListener oclMonBouton = new OnClickListener() {
+       public void onClick(View v) {
+         println("on m'a cliqué");
+         startSpeech();///here the call for method 1;
+         
+     }
+       };
+     
+    bouton.setOnClickListener(oclMonBouton);
+
+      ///adding the button to the frameLayout (processing);
+
+    fl = (FrameLayout)act.getWindow().getDecorView().getRootView();
+       getActivity().runOnUiThread(new Runnable() {
+     //@Override
+     public void run() {
+    
+     FrameLayout.LayoutParams params1 = new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT,Gravity.TOP); 
+                  // FrameLayout.LayoutParams params2 = new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT,Gravity.BOTTOM); //uncomment if you want change the button position (which can also be set with setX());
+            
+            fl.addView(bouton,params1);
+   
+    }
+  });
+}
+
+private void startSpeech() {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);///standard intent
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());//choose the local language
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT,
+                "hello world");///show a message to the user
+        try {
+            this.getActivity().startActivityForResult(intent, 666);///start Activity for result with some "code" (what you want) to "identify" your call
+        } catch (ActivityNotFoundException a) {
+            Toast.makeText(this.getActivity().getApplicationContext(),"désolé votre téléphone ne supporte pas cette fonction",
+            Toast.LENGTH_SHORT).show();///error message in case that your phone cannot offer SpeechToText
+        }
+}
+
+
+void onActivityResult(int requestCode, int resultCode, Intent data) {
+       
+        switch (requestCode) {
+            case 666: {
+              if (resultCode == Activity.RESULT_OK && null != data) {//data are returned && the phone can use speechToText
+                  ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                  background(255);
+                  text(result.get(0),width/2,height/2);
+                  println("speech recognition result:");
+                  println(result.get(0));
+              }
+              break;
+            }
+    }
+}
+
 void setup() {
  // size(800, 800); //you can change this to be fullscreen
   //frameRate(30);
+  act = this.getActivity();
+  //sp = SpeechRecognizer.createSpeechRecognizer(getActivity());
   orientation(PORTRAIT);
    
   sensor = new KetaiSensor(this);
@@ -51,6 +168,8 @@ void setup() {
 }
 
 void draw() {
+  onActivityResult(666,act.RESULT_OK,intent);
+  
   int index = trialIndex;
 
   //uncomment line below to see if sensors are updating

@@ -35,6 +35,19 @@ import android.os.BaseBundle;
 import android.os.Bundle;
 import android.content.Intent;
 
+import java.util.ArrayList;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.media.AudioManager;
+import android.os.Bundle;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
+import android.widget.TextView;
+import android.widget.Toast;
+
 SpeechRecognizer sp;
 Activity act;
 Intent intent;
@@ -43,7 +56,38 @@ private static final int MY_BUTTON1 = 9000;
 FrameLayout fl;
 Context context;
 Bundle savedInstanceState;
-RecognitionListener listener;
+RecognitionListener listener = new RecognitionListener() {
+      public void onReadyForSpeech(Bundle params)
+    {
+      println("onReadyForSpeech");
+    }
+    public void onBeginningOfSpeech()
+    {
+    }
+    public void onRmsChanged(float rmsdB)
+    {
+    }
+    public void onBufferReceived(byte[] buffer)
+    {
+    }  
+  public void onEndOfSpeech()
+    {
+        println("onEndOfSpeech");
+    }
+    public void onError(int error)
+    {
+    }
+    public void onResults(Bundle results)                   
+    {      
+      println("onResult");
+    }
+    public void onPartialResults(Bundle partialResults)
+    {
+    }
+    public void onEvent(int eventType, Bundle params)
+    {
+    }
+ };
 
 
 
@@ -72,40 +116,40 @@ int countDownTimerWait = 0;
   //  startSpeech();
   //}
 
-public void onStart(){
-   act = this.getActivity();
- context = act.getApplicationContext();
+//public void onStart(){
+//   act = this.getActivity();
+// context = act.getApplicationContext();
 
- bouton = new Button(act);
-bouton.setText("startspeech");
- bouton.setBackgroundColor(Color.WHITE);
-  bouton.setId(MY_BUTTON1);
+// bouton = new Button(act);
+//bouton.setText("startspeech");
+// bouton.setBackgroundColor(Color.WHITE);
+//  bouton.setId(MY_BUTTON1);
       
-       OnClickListener oclMonBouton = new OnClickListener() {
-       public void onClick(View v) {
-         println("on m'a cliqué");
-         startSpeech();///here the call for method 1;
+//       OnClickListener oclMonBouton = new OnClickListener() {
+//       public void onClick(View v) {
+//         println("on m'a cliqué");
+//         startSpeech();///here the call for method 1;
          
-     }
-       };
+//     }
+//       };
      
-    bouton.setOnClickListener(oclMonBouton);
+//    bouton.setOnClickListener(oclMonBouton);
 
-      ///adding the button to the frameLayout (processing);
+//      ///adding the button to the frameLayout (processing);
 
-    fl = (FrameLayout)act.getWindow().getDecorView().getRootView();
-       getActivity().runOnUiThread(new Runnable() {
-     //@Override
-     public void run() {
+//    fl = (FrameLayout)act.getWindow().getDecorView().getRootView();
+//       getActivity().runOnUiThread(new Runnable() {
+//     //@Override
+//     public void run() {
     
-     FrameLayout.LayoutParams params1 = new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT,Gravity.TOP); 
-                  // FrameLayout.LayoutParams params2 = new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT,Gravity.BOTTOM); //uncomment if you want change the button position (which can also be set with setX());
+//     FrameLayout.LayoutParams params1 = new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT,Gravity.TOP); 
+//                  // FrameLayout.LayoutParams params2 = new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT,Gravity.BOTTOM); //uncomment if you want change the button position (which can also be set with setX());
             
-            fl.addView(bouton,params1);
+//            fl.addView(bouton,params1);
    
-    }
-  });
-}
+//    }
+//  });
+//}
 
 private void startSpeech() {
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);///standard intent
@@ -143,6 +187,21 @@ void setup() {
   //frameRate(30);
   act = this.getActivity();
   //sp = SpeechRecognizer.createSpeechRecognizer(getActivity());
+  //Android's native function for running code on the UI thread
+  runOnUiThread(new Runnable() {
+    public void run() {
+      //Code to run on the UI thread
+      Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+    intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+    intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getClass().getPackage().getName());
+    intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 5);
+    
+      sp = SpeechRecognizer.createSpeechRecognizer(getActivity());
+      sp.setRecognitionListener(listener);
+      sp.startListening(intent);
+      println("start listening");
+      }
+  });
   orientation(PORTRAIT);
    
   sensor = new KetaiSensor(this);
@@ -168,6 +227,7 @@ void setup() {
 }
 
 void draw() {
+  //startSpeech();
   onActivityResult(666,act.RESULT_OK,intent);
   
   int index = trialIndex;

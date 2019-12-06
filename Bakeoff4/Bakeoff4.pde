@@ -94,8 +94,8 @@ void draw() {
     else
       fill(180, 180, 180);
 
-    ellipse(0,0, 100, 100);
-    text(i, 50,50);
+    rect(0,0, 100, 150);
+    text(i, 100,100);
     popMatrix();
   }
   
@@ -108,7 +108,7 @@ void draw() {
   pushMatrix();
   translate(width/2,height/2);
   rotate(radians(angleCursor));
-  rect(140,0, 50, 50);
+  //rect(140,0, 50, 50);
   popMatrix();
 
   fill(255);//white
@@ -198,7 +198,7 @@ void onAccelerometerEvent(float x, float y, float z)
         }
       }
       // add a next trail cooling period
-      coolingPeriod = 10;
+      coolingPeriod = 20;
     
     }
     countDownTimerWait = 10; // a timer for 0.5 seconds

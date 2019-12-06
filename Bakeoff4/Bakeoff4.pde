@@ -239,19 +239,15 @@ int getTarget(float x, float y, float z) {
   // looking down
   if (z >= 0) {
     if (x >= 0) {
-      //println("2");
       return 2;
     } else {
-      //println("3");
       return 3;
     }
   // looking up
   } else {
     if (x >= 0) {
-      //println("0");
       return 0;
     } else {
-      //println("1");
       return 1;
     }
   }

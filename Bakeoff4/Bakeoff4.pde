@@ -5,6 +5,8 @@ import ketai.sensors.*;
 KetaiSensor sensor;
 float angleCursor = 0;
 float light = 0; 
+// global: target correctness check
+boolean rightTarget = false;
 float accel = 0;
 float proxSensorThreshold = 20; //you will need to change this per your device.
 
@@ -99,7 +101,6 @@ void draw() {
     popMatrix();
   }
   
-
   if (light>proxSensorThreshold)
     fill(180, 0, 0);
   else
@@ -115,14 +116,13 @@ void draw() {
   text("Trial " + (index+1) + " of " +trialCount, width/2, 50);
   //text("Target #" + (targets.get(index).target), width/2, 100);
 
-//only show phase two if the finger is down
-if (light<=proxSensorThreshold)
-{
-  if (targets.get(index).action==0)
-    text("Action: UP", width/2, 150);
-  else
-    text("Action: DOWN", width/2, 150);
-}
+  // tells you to cover if action==1 and uncover if action==0, show only if phase 1 is right
+  if (rightTarget) {
+    if (targets.get(index).action==1)
+      text("COVER SENSOR", width/2, 150);
+    else
+      text("DON'T COVER SENSOR", width/2, 150);
+  }
 
   //debug output only, slows down rendering
   //text("light level:" + int(light), width/2, height-100);
@@ -188,8 +188,18 @@ void onAccelerometerEvent(float x, float y, float z)
     } else { // the user has stayed on this target for 0.5 seconds. Check to see if hit
       if (prevTarget ==t.target) { //check if it is the right target
         println("Right target, right z direction!");
-        trialIndex++; //next trial!
-        prevTarget = -1;
+        // setting rightTarget = true will cause the "cover" or "don't cover" text to appear
+        rightTarget = true;
+        // sets curAction to the user's current action
+        int curAction = 0;
+        if (light <= proxSensorThreshold)
+          curAction = 1;
+        // check if current action matches correct action
+        if (curAction == t.action) {
+          trialIndex++; //next trial!
+          prevTarget = -1;
+          rightTarget = false;
+        }
       } else {
         if (trialIndex>0) {
           trialIndex--; //move back one trial as penalty!

@@ -2,6 +2,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import ketai.sensors.*;
 
+
+PImage bg;
 KetaiSensor sensor;
 float angleCursor = 0;
 float light = 0; 
@@ -32,8 +34,9 @@ int coolingPeriod = 0;
 void setup() {
  // size(800, 800); //you can change this to be fullscreen
   //frameRate(30);
+  
   orientation(PORTRAIT);
-
+  bg = loadImage("phone.jpg");
   sensor = new KetaiSensor(this);
   sensor.start();
   //sensor.enableMagenticField();
@@ -63,7 +66,7 @@ void draw() {
   //println("light val: " + light +", cursor accel vals: " + cursorX +"/" + cursorY);
   //println("light val: " + light);
   background(80); //background is light grey
-
+  image(bg, 0, 0, width, height);
   countDownTimerWait--;
   coolingPeriod--;
 

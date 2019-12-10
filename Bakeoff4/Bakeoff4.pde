@@ -10,10 +10,11 @@ float light = 0;
 // global: target correctness check
 boolean rightTarget = false;
 float accel = 0;
-float proxSensorThreshold = 20; //you will need to change this per your device.
+float proxSensorThreshold = 0.5; //you will need to change this per your device.
 
 float accelerometerX, accelerometerY, accelerometerZ;
 int prevTarget = -1;
+boolean showedText = false;
 
 private class Target
 {
@@ -64,7 +65,7 @@ void draw() {
 
   //uncomment line below to see if sensors are updating
   //println("light val: " + light +", cursor accel vals: " + cursorX +"/" + cursorY);
-  //println("light val: " + light);
+  println("light val: " + light);
   background(80); //background is light grey
   image(bg, 0, 0, width, height);
   countDownTimerWait--;
@@ -103,11 +104,6 @@ void draw() {
     text(i, 100,100);
     popMatrix();
   }
-  
-  if (light>proxSensorThreshold)
-    fill(180, 0, 0);
-  else
-    fill(255, 0, 0);
 
   pushMatrix();
   translate(width/2,height/2);
@@ -121,41 +117,19 @@ void draw() {
 
   // tells you to cover if action==1 and uncover if action==0, show only if phase 1 is right
   if (rightTarget) {
+    showedText = true;
     if (targets.get(index).action==1)
-      text("COVER SENSOR", width/2, 150);
+      text("COVER", width/2, 150);
     else
-      text("DON'T COVER SENSOR", width/2, 150);
+      text("DON'T COVER", width/2, 150);
   }
+  
 
   //debug output only, slows down rendering
   //text("light level:" + int(light), width/2, height-100);
   //text("z-axis accel: " + nf(accel,0,1), width/2, height-50); //use this to check z output!
   //text("touching target #" + hitTest(), width/2, height-150); //use this to check z output!
 
-}
-
-int hitTest()
-{
-  if (angleCursor>330 || angleCursor<30)
-     return 0;
-  else if (angleCursor>60 && angleCursor<120)
-     return 1;
-  else if (angleCursor>150 && angleCursor<210)
-     return 2;
-  else if (angleCursor>240 && angleCursor<300)
-     return 3;
-  else
-    return -1;
-}
-
-//use gyro (rotation) to update angle
-void onGyroscopeEvent(float x, float y, float z)
-{
-  if (light>proxSensorThreshold) //only update angle cursor if light is low / prox sensor covered
-    angleCursor -= z*3; //cented to window and scaled
-    if (angleCursor<0)
-      angleCursor+=360; //never go below 0, keep it within 0-360
-    angleCursor %= 360; //mod by 360 to keep it within 0-360
 }
 
 void onLightEvent(float v) //this just updates the light value
@@ -174,22 +148,16 @@ void onAccelerometerEvent(float x, float y, float z)
 
   if (t==null)
     return;
-    
-  accelerometerX = x;
-  accelerometerY = y;
-  accelerometerZ = z;
 
-  //if (getTarget(x,y,z) == 1) {
-  //  println("Right target, right z direction!");
-  //  trialIndex++; //next trial!
-  //}
-  println("getTarget=", getTarget(x,y,z));
+
+  //println("getTarget=", getTarget(x,y,z));
   if (countDownTimerWait<0 && coolingPeriod <= 0) {
     int curTarget = getTarget(x,y,z);
     if (prevTarget == -1 || prevTarget != curTarget) {
       prevTarget = curTarget;
     } else { // the user has stayed on this target for 0.5 seconds. Check to see if hit
-      if (prevTarget ==t.target) { //check if it is the right target
+      if (prevTarget == t.target) { //check if it is the right target
+        // passed phase 1
         println("Right target, right z direction!");
         // setting rightTarget = true will cause the "cover" or "don't cover" text to appear
         rightTarget = true;
@@ -198,23 +166,26 @@ void onAccelerometerEvent(float x, float y, float z)
         if (light <= proxSensorThreshold)
           curAction = 1;
         // check if current action matches correct action
-        if (curAction == t.action) {
+        if (showedText && curAction == t.action) {
+          println("passed phase 2");
           trialIndex++; //next trial!
+          showedText = false;
           prevTarget = -1;
-          rightTarget = false;
+          rightTarget = false; // next trial's will start out as worng
         }
       } else {
         if (trialIndex>0) {
           trialIndex--; //move back one trial as penalty!
           //println("right target, WRONG z direction!");
           prevTarget = -1;
+          rightTarget = false; // next trial's will start out as worng
         }
       }
       // add a next trail cooling period
       coolingPeriod = 20;
     
     }
-    countDownTimerWait = 10; // a timer for 0.5 seconds
+    countDownTimerWait = 20; // a timer for 0.5 seconds
     
   }
 

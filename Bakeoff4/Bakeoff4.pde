@@ -37,7 +37,7 @@ void setup() {
   //frameRate(30);
   
   orientation(PORTRAIT);
-  bg = loadImage("phone.jpg");
+  bg = loadImage("phone.png");
   sensor = new KetaiSensor(this);
   sensor.start();
   //sensor.enableMagenticField();
@@ -67,7 +67,7 @@ void draw() {
   //println("light val: " + light +", cursor accel vals: " + cursorX +"/" + cursorY);
   println("light val: " + light);
   background(80); //background is light grey
-  image(bg, 0, 0, width, height);
+  image(bg, 20, 20, width-35, height-30);
   countDownTimerWait--;
   coolingPeriod--;
 

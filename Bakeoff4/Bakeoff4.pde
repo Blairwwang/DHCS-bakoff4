@@ -89,8 +89,8 @@ void draw() {
 
   if (userDone)
   {
-    text("User completed " + trialCount + " trials", width/2, 50);
-    text("User took " + nfc((finishTime-startTime)/1000f/trialCount, 2) + " sec per target", width/2, 150);
+    text(+ trialCount + " trials", width/2, 50);
+    text(nfc((finishTime-startTime)/1000f/trialCount, 2) + " sec per target", width/2, 150);
     return;
   }
   
@@ -128,30 +128,6 @@ void draw() {
   } 
   //println("target: " + targets.get(index).target);
 
-//code to draw four target dots in a grid
-  //for (int i=0; i<4; i++)
-  //{
-  //  pushMatrix();
-  //  translate(width/2, height/2);
-  //  rotate(radians(i*90 - 135));
-  //  translate(150,0); 
-
-  //  if (targets.get(index).target==i) // colorize target
-  //    fill(0, 255, 0);
-  //  else
-  //    fill(180, 180, 180);
-
-  //  rect(0,0, 100, 150);
-  //  text(i, 100,100);
-  //  popMatrix();
-  //}
-
-  //pushMatrix();
-  //translate(width/2,height/2);
-  //rotate(radians(angleCursor));
-  ////rect(140,0, 50, 50);
-  //popMatrix();
-
   fill(40); // dark grey //white
   text("Trial " + (index+1) + " of " +trialCount, width/2, 50);
   //text("Target #" + (targets.get(index).target), width/2, 100);
@@ -159,10 +135,14 @@ void draw() {
   // tells you to cover if action==1 and uncover if action==0, show only if phase 1 is right
   if (rightTarget) {
     showedText = true;
-    if (targets.get(index).action==1)
+    if (targets.get(index).action==1) {
+      fill(255,0,0);
       text("COVER", width/2, 150);
-    else
+    }
+    else {
+      fill(255,0,0);
       text("DON'T COVER", width/2, 150);
+    }
   }
   
 

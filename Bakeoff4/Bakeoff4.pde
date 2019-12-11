@@ -1,7 +1,12 @@
 import java.util.ArrayList;
 import java.util.Collections;
 import ketai.sensors.*;
-
+import android.app.Activity;
+import android.content.Context;
+import android.os.Vibrator;
+ 
+ 
+Activity act;
 
 PImage bg;
 KetaiSensor sensor;
@@ -47,7 +52,9 @@ void setup() {
   textFont(createFont("Arial", 40)); //sets the font to Arial size 20
   textAlign(CENTER);
   noStroke(); //no stroke
-
+  
+  act = this.getActivity();
+  
   for (int i=0; i<trialCount; i++)  //don't change this!
   {
     Target t = new Target();
@@ -65,7 +72,7 @@ void draw() {
 
   //uncomment line below to see if sensors are updating
   //println("light val: " + light +", cursor accel vals: " + cursorX +"/" + cursorY);
-  //println("light val: " + light);
+  println("light val: " + light);
   background(255); //background is light grey
   image(bg, 20, 20, width-35, height-30);
   countDownTimerWait--;
@@ -119,7 +126,7 @@ void draw() {
     }
     //popMatrix();
   } 
-  println("target: " + targets.get(index).target);
+  //println("target: " + targets.get(index).target);
 
 //code to draw four target dots in a grid
   //for (int i=0; i<4; i++)
@@ -203,6 +210,9 @@ void onAccelerometerEvent(float x, float y, float z)
         if (showedText && curAction == t.action) {
           println("passed phase 2");
           trialIndex++; //next trial!
+          Vibrator vibrer = (Vibrator) act.getSystemService(Context.VIBRATOR_SERVICE);
+          vibrer.vibrate(100);
+          
           showedText = false;
           prevTarget = -1;
           rightTarget = false; // next trial's will start out as worng
@@ -219,7 +229,7 @@ void onAccelerometerEvent(float x, float y, float z)
       coolingPeriod = 20;
     
     }
-    countDownTimerWait = 10; // a timer for 0.5 seconds
+    countDownTimerWait = 20; // a timer for 0.5 seconds
     
   }
 

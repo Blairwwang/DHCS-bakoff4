@@ -33,7 +33,7 @@ int countDownTimerWait = 0;
 int coolingPeriod = 0;
 
 void setup() {
- // size(800, 800); //you can change this to be fullscreen
+  //size(480, 960); //you can change this to be fullscreen
   //frameRate(30);
   
   orientation(PORTRAIT);
@@ -43,7 +43,7 @@ void setup() {
   //sensor.enableMagenticField();
   //sensor.enableOrientation();
 
-  rectMode(CENTER);
+  //rectMode(CENTER);
   textFont(createFont("Arial", 40)); //sets the font to Arial size 20
   textAlign(CENTER);
   noStroke(); //no stroke
@@ -65,7 +65,7 @@ void draw() {
 
   //uncomment line below to see if sensors are updating
   //println("light val: " + light +", cursor accel vals: " + cursorX +"/" + cursorY);
-  println("light val: " + light);
+  //println("light val: " + light);
   background(80); //background is light grey
   image(bg, 20, 20, width-35, height-30);
   countDownTimerWait--;
@@ -86,30 +86,64 @@ void draw() {
     text("User took " + nfc((finishTime-startTime)/1000f/trialCount, 2) + " sec per target", width/2, 150);
     return;
   }
-
-//code to draw four target dots in a grid
+  
+  
+  
+  // draw highlighted rectangle
   for (int i=0; i<4; i++)
   {
-    pushMatrix();
-    translate(width/2, height/2);
-    rotate(radians(i*90 - 135));
-    translate(150,0); 
+    //pushMatrix();
+    if (targets.get(index).target==0) {
+      noFill();
+      rect(0,0,width/2,height/2);
+      stroke(0,255,0);
+      strokeWeight(5);
+    }
+    else if (targets.get(index).target==1) {
+      noFill();
+      rect(width/2,0,width/2,height/2);
+      stroke(0,255,0);
+      strokeWeight(5);
+    }
+    else if (targets.get(index).target==2) {
+      noFill();
+      rect(width/2,height/2,width/2,height/2);
+      stroke(0,255,0);
+      strokeWeight(5);
+    }
+    else {
+      noFill();
+      rect(0,height/2,width/2,height/2);
+      stroke(0,255,0);
+      strokeWeight(5);
+    }
+    //popMatrix();
+  } 
+  println("target: " + targets.get(index).target);
 
-    if (targets.get(index).target==i) // colorize target
-      fill(0, 255, 0);
-    else
-      fill(180, 180, 180);
+//code to draw four target dots in a grid
+  //for (int i=0; i<4; i++)
+  //{
+  //  pushMatrix();
+  //  translate(width/2, height/2);
+  //  rotate(radians(i*90 - 135));
+  //  translate(150,0); 
 
-    rect(0,0, 100, 150);
-    text(i, 100,100);
-    popMatrix();
-  }
+  //  if (targets.get(index).target==i) // colorize target
+  //    fill(0, 255, 0);
+  //  else
+  //    fill(180, 180, 180);
 
-  pushMatrix();
-  translate(width/2,height/2);
-  rotate(radians(angleCursor));
-  //rect(140,0, 50, 50);
-  popMatrix();
+  //  rect(0,0, 100, 150);
+  //  text(i, 100,100);
+  //  popMatrix();
+  //}
+
+  //pushMatrix();
+  //translate(width/2,height/2);
+  //rotate(radians(angleCursor));
+  ////rect(140,0, 50, 50);
+  //popMatrix();
 
   fill(255);//white
   text("Trial " + (index+1) + " of " +trialCount, width/2, 50);

@@ -66,7 +66,7 @@ void draw() {
   //uncomment line below to see if sensors are updating
   //println("light val: " + light +", cursor accel vals: " + cursorX +"/" + cursorY);
   //println("light val: " + light);
-  background(80); //background is light grey
+  background(255); //background is light grey
   image(bg, 20, 20, width-35, height-30);
   countDownTimerWait--;
   coolingPeriod--;
@@ -145,7 +145,7 @@ void draw() {
   ////rect(140,0, 50, 50);
   //popMatrix();
 
-  fill(255);//white
+  fill(40); // dark grey //white
   text("Trial " + (index+1) + " of " +trialCount, width/2, 50);
   //text("Target #" + (targets.get(index).target), width/2, 100);
 
@@ -219,7 +219,7 @@ void onAccelerometerEvent(float x, float y, float z)
       coolingPeriod = 20;
     
     }
-    countDownTimerWait = 20; // a timer for 0.5 seconds
+    countDownTimerWait = 10; // a timer for 0.5 seconds
     
   }
 
